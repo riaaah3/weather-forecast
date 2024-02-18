@@ -60,7 +60,7 @@ function displayDashboard() {
     var previousSearch = JSON.parse(localStorage.getItem('weatherDashboard')) || []
     var htmlcode = ''
     for (i = 0; i < previousSearch.length;i++){
-        htmlcode += `<button class="btn btn-success" type="button">${previousSearch[i]}</button>`
+        htmlcode += `<button class="btn btn-primary" type="button">${previousSearch[i]}</button>`
     }
     document.getElementById('previousSearch').innerHTML = htmlcode
 }
