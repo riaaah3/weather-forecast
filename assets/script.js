@@ -1,24 +1,27 @@
 var formElement = document.getElementById("weathercity")
 var apiKey = "9f623ab5364492b2e8d301b8c97200b6"
-
-formElement.addEventListener("submit", function(evt){
+var previousSearch = JSON.parse(localStorage.getItem('weatherDashboard')) || []
+formElement.addEventListener("submit", function (evt) {
     evt.preventDefault()
 
-var city = document.getElementById("cityname").value
-console.log(city)
-currentWeather(city)
-fiveDayForecast(city)
+    var city = document.getElementById("cityname").value
+    console.log(city)
+    previousSearch.push(city)
+    currentWeather(city)
+    localStorage.setItem('weatherDashboard', JSON.stringify(previousSearch))
+    displayDashboard()
+    fiveDayForecast(city)
 })
 
 function currentWeather(city) {
-    var url =`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial` //back tics template literal
+    var url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial` //back tics template literal
     fetch(url)
-    .then(response =>  response.json())
-    .then(apidata => {
-        console.log(apidata)
+        .then(response => response.json())
+        .then(apidata => {
+            console.log(apidata)
 
-        var displayForecast = document.getElementById("currentForecast");
-        displayForecast.innerHTML = `<div class="card" style="width: 18rem;">
+            var displayForecast = document.getElementById("currentForecast");
+            displayForecast.innerHTML = `<div class="card" style="width: 18rem;">
         <div class="card-body">
           <h5 class="card-title">${city}</h5>
           <h6 class="card-subtitle mb-2 text-body-secondary">Temperature: ${apidata.main.temp}<img src="https://openweathermap.org/img/wn/${apidata.weather[0].icon}@2x.png"/></h6>
@@ -27,18 +30,18 @@ function currentWeather(city) {
           <p class="card-test">Description: ${apidata.weather[0].description}</p>
         </div>
       </div>`
-    })
+        })
 }
 
 function fiveDayForecast(city) {
-    var url =`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}` //back tics template literal
+    var url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}` //back tics template literal
     fetch(url)
-    .then(response =>  response.json())
-    .then(apidata => {
-        console.log(apidata)
-        let htmlCode =""
-        for (let i = 0; i < apidata.list.length;i=i+8){
-            htmlCode += `<div class="card" style="width: 18rem;">
+        .then(response => response.json())
+        .then(apidata => {
+            console.log(apidata)
+            let htmlCode = ""
+            for (let i = 0; i < apidata.list.length; i = i + 8) {
+                htmlCode += `<div class="card" style="width: 18rem;">
             <div class="card-body">
               <h5 class="card-title">${apidata.list[i].dt_txt}</h5>
               <h6 class="card-subtitle mb-2 text-body-secondary">Temperature: ${apidata.list[i].main.temp}<img src="https://openweathermap.org/img/wn/${apidata.list[i].weather[0].icon}@2x.png"/></h6>
@@ -48,10 +51,18 @@ function fiveDayForecast(city) {
             </div>
           </div>
             `
-        }
-        document.getElementById("displayDays").innerHTML = htmlCode
-    })
+            }
+            document.getElementById("displayDays").innerHTML = htmlCode
+        })
 }
 
-
+function displayDashboard() {
+    var previousSearch = JSON.parse(localStorage.getItem('weatherDashboard')) || []
+    var htmlcode = ''
+    for (i = 0; i < previousSearch.length;i++){
+        htmlcode += `<button class="btn btn-success" type="button">${previousSearch[i]}</button>`
+    }
+    document.getElementById('previousSearch').innerHTML = htmlcode
+}
+displayDashboard()
 // let html = document.getElementById("previousSearch").innerHTML;
